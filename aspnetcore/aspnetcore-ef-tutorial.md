@@ -7,10 +7,15 @@ npm install -g yo
 * select empty web application
 # package add
 > dotnet add package Microsoft.AspNetCore.Mvc
+
 > dotnet add package Microsoft.AspNetCore.StaticFiles
+
 > dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+
 > dotnet add package Microsoft.EntityFrameworkCore.Design
+
 > dotnet restore
+
 # add dbcontext and poco entity
 > cd mywebproject
 > mkdir models && cd
