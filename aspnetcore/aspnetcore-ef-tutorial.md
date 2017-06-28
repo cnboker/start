@@ -5,7 +5,7 @@ npm install -g yo
 # create empty web project
 > yo aspnet 
 
- select empty web application
+f select empty web application
 # package add
 > dotnet add package Microsoft.AspNetCore.Mvc
 
@@ -19,15 +19,22 @@ npm install -g yo
 
 # add dbcontext and poco entity
 > cd mywebproject
+
 > mkdir models && cd
+
 > touch BlogContext.cs
-> add constructor otherwise ef migration failure
+
+ add constructor otherwise ef migration failure
+
 * blogcontext.cs look like:
 
 # add appsettings
-* enter project root dir
+ enter project root dir
+
 > touch appsettings.json 
-* add databaseConnection in appsettings.json
+
+ add databaseConnection in appsettings.json
+
 ```js {
     "ConnectionStrings":{
         "DefaultConnection":"server=.;database=mytest;user id=sa;password=*"
@@ -50,7 +57,9 @@ open start.cs file
 > dotnet restore
 增加以上库使为了启动数据库迁移指令
 > dotnet ef migarations add inital
+
 > dotnet ef database update
+
 > dotnet ef migrations remove
 
 # project reference
