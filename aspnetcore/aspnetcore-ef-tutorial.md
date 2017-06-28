@@ -4,7 +4,8 @@ osx
 npm install -g yo
 # create empty web project
 > yo aspnet 
-* select empty web application
+
+ select empty web application
 # package add
 > dotnet add package Microsoft.AspNetCore.Mvc
 
