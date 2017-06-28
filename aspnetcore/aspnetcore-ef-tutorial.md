@@ -56,6 +56,7 @@ open start.cs file
 ```
 > dotnet restore
 增加以上库使为了启动数据库迁移指令
+
 > dotnet ef migarations add inital
 
 > dotnet ef database update
@@ -68,7 +69,7 @@ open start.cs file
 
 It should be noted the .sln file is also named the same as it's parent folder;
 ## add project to sln
-* dotnet sln add 'aspnetsample.csproj'
+> dotnet sln add 'aspnetsample.csproj'
 ## add project reference
-* dotnet add 'a.csproj' reference 'b.lib.csproj'
+> dotnet add 'a.csproj' reference 'b.lib.csproj'
 
