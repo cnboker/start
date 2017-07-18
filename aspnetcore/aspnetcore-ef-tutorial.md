@@ -57,7 +57,7 @@ open start.cs file
 > dotnet restore
 增加以上库使为了启动数据库迁移指令
 
-> dotnet ef migarations add inital
+> dotnet ef migrations add inital
 
 > dotnet ef database update
 
