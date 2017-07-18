@@ -22,3 +22,25 @@ git push origin master
 ```javascript
 git config --global credential.helper wincred
 ```
+
+## Adding your project to GitHub
+> Open github.com and create a Repo. coppy the path to the .git for later use.
+> using the termial, navigete to the location where your vscode project
+```javascript
+git init
+git remote add origin https://github.com/to/origin.git
+git add.
+git commit -m "inital commit"
+git push origin master
+```
+
+## To remove folder/directory only from git repository and not from the local try 3 simple commands
+```js
+git rm -r --cached folderName
+git commit -m "remove folder"
+git push origin master
+```
+add .gitignore file, add line
+```js
+/folderName
+```
