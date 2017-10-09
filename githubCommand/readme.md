@@ -44,3 +44,10 @@ add .gitignore file, add line
 ```js
 /folderName
 ```
+
+## .gitignore is not work
+```js
+git rm -r -cached .
+git add .
+git commit -m ".gitignore is now working"
+```
