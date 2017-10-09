@@ -47,7 +47,7 @@ add .gitignore file, add line
 
 ## .gitignore is not work
 ```js
-git rm -r -cached .
+git rm -r --cached .
 git add .
 git commit -m ".gitignore is now working"
 ```
