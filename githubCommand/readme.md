@@ -32,6 +32,8 @@ git remote add origin https://github.com/to/origin.git
 git add.
 git commit -m "inital commit"
 git push origin master
+> force merge
+git push -f origin master
 ```
 
 ## To remove folder/directory only from git repository and not from the local try 3 simple commands
