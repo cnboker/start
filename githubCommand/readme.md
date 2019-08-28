@@ -58,3 +58,5 @@ git commit -m ".gitignore is now working"
 ```js
 git reset --hard
 ```
+
+## https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line
