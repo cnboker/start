@@ -38,3 +38,10 @@ ms.date: 4/17/2020
 ## 获取远程分支
 
 - `git checkout --track origin/nextUI`
+
+## master 修改内容merge 到分支
+
+- `
+- git checkout feature1
+- git merge master
+- `
