@@ -34,6 +34,8 @@ ms.date: 4/17/2020
 ## 删除分支
 
 - `git branch -d nextUI`
+## 删除远程分支
+- `git push -d origin  <branchName>`
 
 ## 获取远程分支
 
