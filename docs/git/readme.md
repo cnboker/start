@@ -59,4 +59,10 @@ git commit -m ".gitignore is now working"
 git reset --hard
 ```
 
+## Git - folder case sensitive issue
+
+```bash
+git config core.ignorecase false
+```
+
 ## https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line
