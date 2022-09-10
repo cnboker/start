@@ -59,4 +59,21 @@ git commit -m ".gitignore is now working"
 git reset --hard
 ```
 
+## Git - folder case sensitive issue
+
+```bash
+git config core.ignorecase false
+```
+
 ## https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line
+
+
+# 密码过期处理
+
+## Generate PAT
+1 From your GitHub account, go to Settings => Developer Settings => Personal Access Token => Generate New Token (Give your password) => Fillup the form => click Generate token => Copy the generated Token, it will be something like ghp_sFhFsSHhTzMDreGRLjmks4Tzuzgthdvfsrta
+2.  run bash
+``` bash
+git remote set-url origin https://<githubtoken>@github.com/<username>/<repositoryname>.git
+```
+
