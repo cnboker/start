@@ -32,6 +32,8 @@ ms.date: 4/17/2020
 - `git merge nextUI`
 
 ## 删除分支
+#### remove remote branch
+- `git push origin :accounting`
 
 - `git branch -d nextUI`
 
