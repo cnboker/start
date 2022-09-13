@@ -41,7 +41,7 @@ frp_server将请求转发给frp_client,frp_client服务驻留到homeServer上，
 值得注意的是，homeServer的请求转向都是通过域名转向的，因为具体的服务都在本地，所以/etc/hosts需要
 增加域名定向比如: a.example.com 127.0.0.1
 
-
+![](images/20220913221809.png)  
 
 ## HomeServer 配置
 
