@@ -6,8 +6,46 @@ ms.date: 9/10/2022
 ---
 # 内容
 
-该文档主要记录将云服务数据迁移到home server的过程
-## 更新服务器镜像
+该文档主要记录将云服务迁移到home server的过程,原来的云服务器包括nginx docker, fileapi docker, serviceapi docker, authapi docker, mysql docker等多个服务
+
+```mermaid
+graph LR;
+    nginx-->fileapi;
+    nginx-->serviceapi;
+    nginx-->authapi;
+    nginx-->buildapi;
+```
+
+现在想实现一种方案就是服务器放到本地，外网只需要有合适带宽的公共IP实现内网穿透功能
+
+```mermaid
+graph LR;
+    homeserver-->simple_vps
+    homeserver -->nginx
+    nginx-->fileapi;
+    nginx-->serviceapi;
+    nginx-->authapi;
+    nginx-->buildapi;
+    simple_vps-->frp_server
+    homeserver-->frp_client
+    frp_client-->nginx
+```
+
+新的方案页面请求说明：
+
+用户发起对a.example.com请求->公网ngnix反向代理接收该请求
+nginx将请求转给a.example.com:8888, 8888端口正是frp_server服务器侦听的端,
+frp_server将请求转发给frp_client,frp_client服务驻留到homeServer上，frp_client根据配置规则
+将a.example.com转发给homeServer上的ngnix服务，ngnix将请求转给具体的应用
+
+值得注意的是，homeServer的请求转向都是通过域名转向的，因为具体的服务都在本地，所以/etc/hosts需要
+增加域名定向比如: a.example.com 127.0.0.1
+
+
+
+## HomeServer 配置
+
+homeServer采用raspberry做服务器, 操作系统采用ubuntu 20.04.5
 
 ### 检查服务器版本
 
@@ -58,7 +96,7 @@ sudo apt upgrade
 
 下载地址 https://github.com/fatedier/frp/releases
 
-#### 文件说明
+### 文件说明
 
 ```
 #服务器端执行命令
@@ -70,10 +108,17 @@ frpc -c frpc.ini
 #客户端作为服务运行
 
 ```
+### 公网服务器配置
+公网服务器采用windows操作系统
 
-### 服务器配置
-#### 配置方向代理
-### 客户端配置
+#### 配置nginx反向代理
+
+##### 配置frps.ini
+
+#### 配置自动运行frps,ngnix 2个服务器
+
+
+### Home Server配置
 
 ```bash
 wget https://github.com/fatedier/frp/releases/download/v0.44.0/frp_0.44.0_linux_amd64.tar.gz
