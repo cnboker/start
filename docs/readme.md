@@ -43,6 +43,52 @@ frp_server将请求转发给frp_client,frp_client服务驻留到homeServer上，
 
 ![](images/20220913221809.png)  
 
+## 公网服务器配置
+公网服务器采用windows操作系统
+
+### 配置nginx反向代理
+打开nginx/conf/nginx.conf文件配置反向代理
+
+```json
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    server {
+        listen       80;
+        server_name  a.example.com;
+        location / {
+            proxy_pass http://a.example.com:8888;
+        }
+    }
+}
+
+```
+
+### 配置frps.ini
+
+打开frps.ini文件 配置内容如下
+
+``` json
+[common]
+# frps服务端口
+bind_port = 7000
+# 外网请求a.example.com->ngnix->a.example.com:8888->vhost_http->7000->frp-client
+vhost_http_port = 8888
+```
+
+### 配置自动运行frps,ngnix 2个服务器
+
+
+
 ## HomeServer 配置
 
 homeServer采用raspberry做服务器, 操作系统采用ubuntu 20.04.5
@@ -90,11 +136,22 @@ deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted univer
 sudo apt update
 sudo apt upgrade
 ```
-## 安装frp
+## 安装frp client
 
 ### 下载frp
 
 下载地址 https://github.com/fatedier/frp/releases
+
+```bash
+wget https://github.com/fatedier/frp/releases/download/v0.44.0/frp_0.44.0_linux_amd.tar.gz
+tar -xzvf v0.44.0/frp_0.44.0_linux_amd.tar.gz 
+mv v0.44.0/frp_0.44.0_linux_amd frp
+cd frp
+sudo mkdir /etc/frp
+sudo cp ./frp/frpc /usr/bin
+sudo cp ./frp/frpc.ini /etc/frp
+
+```
 
 ### 文件说明
 
@@ -105,35 +162,45 @@ frps.exe -c frps.ini
 #客户端执行命令
 frpc -c frpc.ini
 
-#客户端作为服务运行
+#frpc as service
 
+[Unit]
+Description=frp client
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/frpc -c  /etc/frp/frpc.ini
+Restart=always
+RestartSec=20s
+User=nobody
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
 ```
-### 公网服务器配置
-公网服务器采用windows操作系统
 
-#### 配置nginx反向代理
+### frpc.ini配置
 
-##### 配置frps.ini
+```json
+[common]
+server_addr = [vps ip]
+server_port = 7000
 
-#### 配置自动运行frps,ngnix 2个服务器
+[web]
+type = http
+local_port = 80
+#本地多项服务
+custom_domains = a.ioliz.com, b.ioliz.com
+```
 
-
-### Home Server配置
-
+### 启动服务
 ```bash
-wget https://github.com/fatedier/frp/releases/download/v0.44.0/frp_0.44.0_linux_amd64.tar.gz
-tar -xzvf v0.44.0/frp_0.44.0_linux_amd64.tar.gz 
-mv v0.44.0/frp_0.44.0_linux_amd64 frp
-cd frp
-
+sudo systemctl start frpc
 ```
 
 ## 安装DOCKER
-
-
-
-## 备份DOCKER 镜像
-
 
 
 ## 恢复DOCKER镜像
