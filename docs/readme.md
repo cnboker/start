@@ -6,7 +6,7 @@ ms.date: 9/10/2022
 ---
 # 内容
 
-该文档主要记录将云服务迁移到home server的过程,原来的云服务器包括nginx docker, fileapi docker, serviceapi docker, authapi docker, mysql docker等多个服务
+该文档主要记录将云VPS迁移到home server的过程,原来的云服务器包括nginx docker, fileapi docker, serviceapi docker, authapi docker, mysql docker等多项服务
 
 ```mermaid
 graph LR;
@@ -16,25 +16,27 @@ graph LR;
     nginx-->buildapi;
 ```
 
-现在想实现一种方案就是服务器放到本地，外网只需要有合适带宽的公共IP实现内网穿透功能
+现在实现一种方案将上面的服务放到本地主机，外网vps只需要提供公共IP实现内网穿透
 
 ```mermaid
-graph LR;
-    homeserver-->simple_vps
-    homeserver -->nginx
-    nginx-->fileapi;
-    nginx-->serviceapi;
-    nginx-->authapi;
-    nginx-->buildapi;
-    simple_vps-->frp_server
-    homeserver-->frp_client
+graph TD;
+    public_vps-->|include|frp_server
+    public_vps-->|include|nginx-reverse
+    public_vps-->|公网|homeserver
+    homeserver -->|include|nginx
+    homeserver-->|include|frp_client
     frp_client-->nginx
+    nginx-->fileapi;
+    nginx-->serviceapi;
+    nginx-->authapi;
+    nginx-->buildapi;
+    
 ```
 
-新的方案页面请求说明：
+新的方案解释：
 
-用户发起对a.example.com请求->公网ngnix反向代理接收该请求
-nginx将请求转给a.example.com:8888, 8888端口正是frp_server服务器侦听的端,
+用户发起对a.example.com请求->公网ngnix反向代理接收该请求,
+nginx将请求转给a.example.com:8888, 8888端口正是frp_server服务侦听的端,
 frp_server将请求转发给frp_client,frp_client服务驻留到homeServer上，frp_client根据配置规则
 将a.example.com转发给homeServer上的ngnix服务，ngnix将请求转给具体的应用
 
@@ -49,7 +51,7 @@ frp_server将请求转发给frp_client,frp_client服务驻留到homeServer上，
 ### 配置nginx反向代理
 打开nginx/conf/nginx.conf文件配置反向代理
 
-```json
+```ini
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
@@ -77,7 +79,7 @@ http {
 
 打开frps.ini文件 配置内容如下
 
-``` json
+``` ini
 [common]
 # frps服务端口
 bind_port = 7000
@@ -112,25 +114,11 @@ Codename:       focal
 sudo cp /etc/apt/sources.list /etc/ap/sources.list.back
 sudo vi /etc/apt/sources.list
 #按 i进入编辑模式，ctl+v粘体aliyun镜像地址
-deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-
-deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports xenial main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports xenial-security main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports xenial-updates main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports xenial-proposed main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports xenial-backports main restricted universe multiverse
 #保存退出
 #更新软件列表及软件
 sudo apt update
@@ -142,7 +130,9 @@ sudo apt upgrade
 
 下载地址 https://github.com/fatedier/frp/releases
 
+
 ```bash
+#amd64 raspberry 不支持
 wget https://github.com/fatedier/frp/releases/download/v0.44.0/frp_0.44.0_linux_amd.tar.gz
 tar -xzvf v0.44.0/frp_0.44.0_linux_amd.tar.gz 
 mv v0.44.0/frp_0.44.0_linux_amd frp
