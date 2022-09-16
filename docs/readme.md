@@ -114,11 +114,11 @@ Codename:       focal
 sudo cp /etc/apt/sources.list /etc/ap/sources.list.back
 sudo vi /etc/apt/sources.list
 #按 i进入编辑模式，ctl+v粘体aliyun镜像地址
-deb https://mirrors.aliyun.com/ubuntu-ports xenial main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu-ports xenial-security main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu-ports xenial-updates main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu-ports xenial-proposed main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu-ports xenial-backports main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports focal main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports focal-security main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports focal-updates main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports focal-proposed main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu-ports focal-backports main restricted universe multiverse
 #保存退出
 #更新软件列表及软件
 sudo apt update
@@ -192,11 +192,26 @@ sudo systemctl start frpc
 
 ## 安装DOCKER
 
+### 安装docker
+```bash
+curl -fsSL https://get.docker.com | sh
+docker version
+```
+
+### 安装docker-compose
+```bash
+sudo apt-get install libffi-dev libssl-dev python3-dev python3 python3-pip -y
+pip3 install docker-compose
+docker-compose --version
+#启动docker服务
+sudo systemctl enable docker
+#升级docker
+sudo apt install update && upgrade
+```
 
 ## 恢复DOCKER镜像
 
 ## 域名重定向
-
 
 ## 笔记
 
