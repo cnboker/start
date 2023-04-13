@@ -1,0 +1,101 @@
+# Ticker and timeframe
+TICKER = "600771.SS"
+INTERVAL = "30m"
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from datetime import datetime, timedelta
+import vectorbt as vbt
+import yfinance as yf
+
+stock = yf.Ticker(TICKER)
+#START = dt.datetime(2023,2,14)
+END   = datetime.now()
+#获取2个月30分钟数据，数据库只支持2个月数据
+START = (END - timedelta(days=59)).date()
+
+
+stock_data = stock.history(interval=INTERVAL, start=START, end=END)
+
+# Calculate the Heikin-Ashi values
+ha_open = (stock_data['Open'].shift(1) + stock_data['Close'].shift(1)) / 2
+#print(ha_open.head)
+ha_close = (stock_data['Open'] + stock_data['High'] + stock_data['Low'] + stock_data['Close']) / 4
+ha_high = stock_data[['High', 'Close', 'Open']].max(axis=1)
+ha_low = stock_data[['Low', 'Close', 'Open']].min(axis=1)
+# Create a new DataFrame with the Heikin-Ashi values
+pd_data = pd.DataFrame({'Open': ha_open, 'Close': ha_close, 'High': ha_high, 'Low': ha_low})
+
+
+# UT Bot Parameters
+SENSITIVITY = 1
+ATR_PERIOD = 10
+
+# Calculate ATR
+pd_data['TR'] = np.maximum(
+    np.maximum(
+        pd_data['High'] - pd_data['Low'],
+        abs(pd_data['High'] - pd_data['Close'].shift())
+    ),
+    abs(pd_data['Low'] - pd_data['Close'].shift())
+)
+pd_data['xATR'] = pd_data['TR'].rolling(window=14).mean()
+
+#
+pd_data["nLoss"] = SENSITIVITY * pd_data["xATR"]
+ 
+#Drop all rows that have nan, X first depending on the ATR preiod for the moving average
+pd_data = pd_data.dropna()
+pd_data = pd_data.reset_index()
+
+# Function to compute ATRTrailingStop
+def xATRTrailingStop_func(close, prev_close, prev_atr, nloss):
+    if close > prev_atr and prev_close > prev_atr:
+        return max(prev_atr, close - nloss)
+    elif close < prev_atr and prev_close < prev_atr:
+        return min(prev_atr, close + nloss)
+    elif close > prev_atr:
+        return close - nloss
+    else:
+        return close + nloss
+ 
+# Filling ATRTrailingStop Variable
+pd_data["ATRTrailingStop"] = [0.0] + [np.nan for i in range(len(pd_data) - 1)]
+ 
+for i in range(1, len(pd_data)):
+    pd_data.loc[i, "ATRTrailingStop"] = xATRTrailingStop_func(
+        pd_data.loc[i, "Close"],
+        pd_data.loc[i - 1, "Close"],
+        pd_data.loc[i - 1, "ATRTrailingStop"],
+        pd_data.loc[i, "nLoss"],
+    )
+
+
+# Calculating signals
+ema = vbt.MA.run(pd_data["Close"], 1, short_name='EMA', ewm=True)
+ 
+pd_data["Above"] = ema.ma_crossed_above(pd_data["ATRTrailingStop"])
+pd_data["Below"] = ema.ma_crossed_below(pd_data["ATRTrailingStop"])
+ 
+pd_data["Buy"] = (pd_data["Close"] > pd_data["ATRTrailingStop"]) & (pd_data["Above"]==True)
+pd_data["Sell"] = (pd_data["Close"] < pd_data["ATRTrailingStop"]) & (pd_data["Below"]==True)
+
+
+# Run the strategy
+pf = vbt.Portfolio.from_signals(
+    pd_data["Close"],
+    entries=pd_data["Buy"],
+    exits=pd_data["Sell"],
+    #upon_opposite_entry='ReverseReduce', 
+    #freq = "30m"#
+)
+
+result = pf.stats()
+
+print(result)
+
+# Show the chart 
+fig = pf.plot()
+fig.show(width=900, height=800)
