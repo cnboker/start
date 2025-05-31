@@ -5,6 +5,13 @@ ms.date: 4/17/2020
 # A simple template for small feature specifications
 ---
 # 内容
+## Activate win11
+
+```shell
+slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+slmgr /skms kms.03k.org
+slmgr /ato
+```
 
 ## Shell
 
