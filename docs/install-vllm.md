@@ -41,8 +41,8 @@ python3 -m vllm.entrypoints.openai.api_server \
 #for v100
 python -m vllm.entrypoints.openai.api_server \
     --model  /home/scott/models/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4 \
-    --max-model-len 8192 \
-    --gpu-memory-utilization 0.9 \
+    --max-model-len 4096 \
+    --gpu-memory-utilization 0.7 \
     --trust-remote-code \
     --quantization gptq \
     --dtype float16
