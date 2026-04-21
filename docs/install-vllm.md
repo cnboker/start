@@ -23,6 +23,11 @@ pip install modelscope -i https://mirrors.cloud.tencent.com/pypi/simple
 # 2. 手动下载 AWQ 版本到指定目录 (假设放在 /home/scott/models)
 # 这个命令会自动处理断点续传，非常稳
 modelscope download --model qwen/Qwen2.5-Coder-14B-Instruct-AWQ --local_dir /home/scott/models/Qwen2.5-Coder-14B-AWQ
+
+
+# 2. 手动下载 AWQ 版本到指定目录 (假设放在 /home/scott/models) for v100
+# 这个命令会自动处理断点续传，非常稳
+modelscope download --model qwen/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4 --local_dir /home/scott/models/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4
 ```
 
 # run
@@ -32,4 +37,14 @@ python3 -m vllm.entrypoints.openai.api_server \
     --max-model-len 8192 \
     --gpu-memory-utilization 0.9 \
     --trust-remote-code
+
+#for v100
+python -m vllm.entrypoints.openai.api_server \
+    --model  /home/scott/models/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4 \
+    --max-model-len 8192 \
+    --gpu-memory-utilization 0.9 \
+    --trust-remote-code \
+    --quantization gptq \
+    --dtype float16
+
 ```
